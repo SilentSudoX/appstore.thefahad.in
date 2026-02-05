@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Store Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 p-4 md:p-8 font-sans">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+        <h1 class="text-2xl font-bold mb-6 flex items-center gap-2 text-gray-800">
+            <i data-lucide="layout-dashboard" class="w-6 h-6 text-green-600"></i>
+            App Code Generator
+        </h1>
+
+        <form id="appForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">App Name</label>
+                    <input type="text" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-green-500 focus:ring-green-500" placeholder="e.g. PUBG Mobile" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Developer</label>
+                    <input type="text" id="developer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g. Tencent Games" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Rating</label>
+                    <input type="number" step="0.1" id="rating" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" value="4.5">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Downloads</label>
+                    <input type="text" id="downloads" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" value="1M+">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Age Rating</label>
+                    <input type="text" id="contentRating" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" value="12+">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Category</label>
+                    <input type="text" id="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Action, Racing...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Type</label>
+                    <select id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white">
+                        <option value="game">Game</option>
+                        <option value="app">App</option>
+                        <option value="book">Book</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Icon URL (Image Link)</label>
+                <input type="url" id="icon" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="https://..." required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Download Link (APK/File)</label>
+                <input type="text" id="downloadLink" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" value="#" placeholder="https://example.com/game.apk">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="App description here..."></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Screenshots (Comma separated URLs)</label>
+                <textarea id="screenshots" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="https://img1.jpg, https://img2.jpg"></textarea>
+            </div>
+
+            <button type="button" onclick="generateCode()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors shadow-md">
+                Generate Code
+            </button>
+        </form>
+
+        <div class="mt-8 border-t pt-6">
+            <h2 class="text-lg font-bold mb-2 text-gray-800">Generated Code</h2>
+            <p class="text-sm text-gray-500 mb-2">Is code ko copy karein aur `index.html` mein `const APPS = [...]` ke andar paste karein.</p>
+            <div class="relative">
+                <textarea id="output" readonly class="w-full h-64 bg-gray-900 text-green-400 font-mono p-4 rounded-lg text-sm focus:outline-none"></textarea>
+                <button onclick="copyToClipboard()" class="absolute top-2 right-2 bg-white text-gray-900 px-3 py-1 rounded text-xs font-bold hover:bg-gray-200 shadow-sm">
+                    Copy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function generateCode() {
+            const id = Date.now(); // Unique ID based on timestamp
+            const name = document.getElementById('name').value;
+            const developer = document.getElementById('developer').value;
+            const rating = document.getElementById('rating').value;
+            const downloads = document.getElementById('downloads').value;
+            const category = document.getElementById('category').value;
+            const type = document.getElementById('type').value;
+            const contentRating = document.getElementById('contentRating').value;
+            const icon = document.getElementById('icon').value;
+            const downloadLink = document.getElementById('downloadLink').value;
+            const description = document.getElementById('description').value;
+            
+            // Handle screenshots
+            const screenshotsRaw = document.getElementById('screenshots').value;
+            const screenshots = screenshotsRaw.split(',').map(s => s.trim()).filter(s => s);
+            
+            const code = `
+    {
+        id: ${id},
+        name: "${name}",
+        developer: "${developer}",
+        rating: ${rating},
+        downloads: "${downloads}",
+        category: "${category}",
+        type: "${type}",
+        contentRating: "${contentRating}",
+        icon: "${icon}",
+        downloadLink: "${downloadLink}",
+        description: "${description.replace(/"/g, '\\"')}",
+        screenshots: [
+            ${screenshots.map(s => `"${s}"`).join(',\n            ')}
+        ]
+    },`;
+
+            document.getElementById('output').value = code;
+        }
+
+        function copyToClipboard() {
+            const copyText = document.getElementById("output");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Code copied! Ab index.html me APPS array me paste karein.");
+        }
+    </script>
+</body>
+</html>
